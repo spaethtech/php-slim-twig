@@ -1,0 +1,34 @@
+{
+    "name": "mvqn/slim-twig",
+    "description": "A collection of Slim 4 Middleware & Twig 3 Extensions.",
+    "minimum-stability": "stable",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ryan Spaeth",
+            "email": "rspaeth@mvqn.net"
+        }
+    ],
+    "require": {
+        "php": "~7.3",
+        "ext-json": "*",
+        "slim/slim": "^4.4",
+        "slim/psr7": "^1.0",
+        "php-di/php-di": "^6.0",
+        "twig/twig": "^3.0",
+        "mvqn/slim": "^2.0",
+        "mvqn/twig": "^2.0"
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "MVQN\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+        }
+    }
+}
