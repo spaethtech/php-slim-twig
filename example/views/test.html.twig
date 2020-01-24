@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Test</title>
+    <!--<link rel="stylesheet" href="{{ "/index.php?/css/main.css"|uncached }}" >-->
 </head>
 <body style="margin:0; padding:30px; font:12px/1.5 Helvetica,Arial,Verdana,sans-serif;">
     <h1 style="margin:0; font-size:48px; font-weight:normal; line-height:48px;">Test</h1>
@@ -11,5 +12,18 @@
     </p>
 
     {{ home }}
+
+    {{ app.test3 }}
+
+    <p>{{ link("/home") }}</p>
+
+    <p>{{ attributes.vRoute }}</p>
+    <p>{{ dump(attributes.vQuery) }}</p>
+
+    <p>{{ ucrm.user }}</p>
+
+    <p>{{ dump(attributes.vQuery) }}</p>
+
+
 </body>
 </html>

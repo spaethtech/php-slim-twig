@@ -17,6 +17,7 @@
         "slim/psr7": "^1.0",
         "php-di/php-di": "^6.0",
         "twig/twig": "^3.0",
+        "slim/twig-view": "^3.0",
         "mvqn/slim": "^2.0",
         "mvqn/twig": "^2.0"
     },

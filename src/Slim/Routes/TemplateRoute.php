@@ -9,6 +9,10 @@ use Psr\Container\ContainerInterface as Container;
 
 
 use Slim\App;
+use Slim\Exception\HttpNotFoundException;
+use Slim\Routing\RouteContext;
+use Slim\Views\Twig;
+use Twig\Loader\FilesystemLoader;
 
 /**
  * Class TemplateController
@@ -26,47 +30,48 @@ final class TemplateRoute extends BuiltInRoute
      *
      * @param App $app The Slim Application for which to configure routing.
      * @param string $path
-     * @param string $containerKey
+     * @param string $twigContainerKey
      */
-    public function __construct(App $app, string $path, string $containerKey = "view")
+    public function __construct(App $app, string $path, string $twigContainerKey = "view")
     {
         $this->route = $app->get("/{file:.+}.{ext:twig}",
-            function (Request $request, Response $response, array $args) use ($app, $path, $containerKey)
+            function (Request $request, Response $response, array $args) use ($app, $path, $twigContainerKey)
             {
+                /** @var Container $container */
+                $container = $this;
+
                 // Get the file and extension from the matched route.
-                $file = $args["file"] ?? "index";
-                $ext = $args["ext"] ?? "html";
+                list($file, $ext) = array_values($args);
 
-                // Interpolate the absolute path to the static HTML file or Twig template.
-                $templates = rtrim($path, "/") . "/$file.$ext";
+                // Interpolate the absolute path to the Twig template.
+                $template = rtrim($path, "/") . "/$file.$ext";
 
-                // Get a local reference to the Twig template renderer.
-                $twig = $app->getContainer()->get($containerKey);
+                // Get local references to the Twig Environment and Loader.
+                /** @var Twig $twig */
+                $twig = $container->get($twigContainerKey);
+
+                /** @var FilesystemLoader $loader */
+                $loader = $twig->getLoader();
+
+                // IF the TemplateRoute's path is not already in the Loader's list of paths, THEN add it!
+                if(!in_array(realpath($path), $loader->getPaths()))
+                    $loader->addPath(realpath($path));
 
                 // Assemble some standard data to send along to the Twig template!
                 $data = [
-                    "route" => $request->getAttribute("vRoute"),
-                    "query" => $request->getAttribute("vQuery"),
-                    "user"  => $request->getAttribute("user"),
+                    "attributes" => $request->getAttributes(),
                 ];
 
-                // IF the file exists exactly as specified...
-                if (file_exists($templates) && !is_dir($templates))
+                // IF the template file exists AND is not a directory...
+                if (file_exists($template) && !is_dir($template))
                 {
-                    // THEN render the file.
+                    // ...THEN render it!
                     return $twig->render($response, "$file.$ext", $data);
-                    //$response = $app->getResponseFactory()->createResponse();
-                    //$response->getBody()->write($twig->render("$file.$ext", $data));
-                    //return $response;
                 }
                 else
                 {
-                    // NOTE: Inside any route closure, $this refers to the Application's Container.
-                    /** @var Container $container */
-                    $container = $this;
-
-                    // OTHERWISE, return the default 404 page!
-                    return $container->get("notFoundHandler")($request, $response, $data);
+                    // OTHERWISE, return a HTTP 404 Not Found!
+                    throw new HttpNotFoundException($request);
                 }
             }
         )->setName(TemplateRoute::class);
