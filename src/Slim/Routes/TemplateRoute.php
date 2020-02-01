@@ -10,6 +10,8 @@ use Psr\Container\ContainerInterface as Container;
 
 use Slim\App;
 use Slim\Exception\HttpNotFoundException;
+use Slim\Interfaces\RouteInterface;
+use Slim\Routing\Route;
 use Slim\Routing\RouteContext;
 use Slim\Views\Twig;
 use Twig\Loader\FilesystemLoader;
@@ -29,11 +31,12 @@ final class TemplateRoute extends BuiltInRoute
      * TemplateController constructor.
      *
      * @param App $app The Slim Application for which to configure routing.
-     * @param string $path
-     * @param string $twigContainerKey
+     * @param string $path The absolute path to the templates directory.
+     * @param string $twigContainerKey An optional container key, if the default key "view" is not used.
      */
     public function __construct(App $app, string $path, string $twigContainerKey = "view")
     {
+        // Add the template route.
         $this->route = $app->get("/{file:.+}.{ext:twig}",
             function (Request $request, Response $response, array $args) use ($app, $path, $twigContainerKey)
             {
