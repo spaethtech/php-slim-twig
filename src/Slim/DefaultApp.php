@@ -4,13 +4,8 @@ declare(strict_types=1);
 namespace MVQN\Slim;
 
 use DI;
-use MVQN\Slim\Middleware\Authentication\Authenticators\FixedAuthenticator;
-use MVQN\Slim\Middleware\Handlers\MethodNotAllowedHandler;
-use MVQN\Slim\Middleware\Handlers\NotFoundHandler;
-use MVQN\Slim\Middleware\Handlers\UnauthorizedHandler;
-use MVQN\Slim\Middleware\Routing\QueryStringRouter;
-use MVQN\Twig\Extensions\QueryStringRouterExtension;
 use Psr\Http\Message\ResponseFactoryInterface;
+use Slim\App;
 use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpUnauthorizedException;
@@ -19,32 +14,51 @@ use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 
+use MVQN\Slim\Middleware\Handlers\MethodNotAllowedHandler;
+use MVQN\Slim\Middleware\Handlers\NotFoundHandler;
+use MVQN\Slim\Middleware\Handlers\UnauthorizedHandler;
+use MVQN\Slim\Middleware\Routing\QueryStringRouter;
+use MVQN\Twig\Extensions\QueryStringRouterExtension;
+
+/**
+ * Class DefaultApp
+ *
+ * @package MVQN\Slim
+ * @author Ryan Spaeth <rspaeth@mvqn.net>
+ */
 class DefaultApp
 {
+    /**
+     * Default application options.
+     */
+    protected const DEFAULT_OPTIONS = [
+        "twig" => [
+            "paths" => [],
+            "options" => [],
+        ]
+    ];
 
-
-    public static function create(array $options = [], bool $debug = false)
+    /**
+     * Create our default Slim Application with PHP-DI Container, Twig Renderer, Error Handling and custom Middleware.
+     *
+     * @param array $options Any options to be merged with the default options.
+     * @param bool $debug Determines whether or not debug messages and logging will be enabled, defaults to FALSE.
+     * @return App A Slim Application.
+     */
+    public static function create(array $options = [], bool $debug = false): App
     {
-        $defaultOptions = [
-            "twig" => [
-                "paths" => [], // dirname(debug_backtrace()[0]["file"])."/views/"
-                "options" => [],
-            ]
-        ];
+        // Merge any user-supplied options with the defaults.
+        $options = array_merge(self::DEFAULT_OPTIONS, $options);
 
-        $options = array_merge($defaultOptions, $options);
+        // Create the application using a PHP-DI Container, as we will be configuring it later.
+        $app = AppFactory::createFromContainer($container = new DI\Container());
 
+        #region Container
 
-
-        AppFactory::setContainer($container = new DI\Container());
-        $app = AppFactory::create();
-
-        // Necessary for injection of the base App, as a ResponseFactory is required to function properly.
+        // Use Slim's own PSR-7 ResponseFactory.
         $container->set(ResponseFactoryInterface::class, DI\create(ResponseFactory::class));
 
-        // Add Routing Middleware.
-        $app->addRoutingMiddleware();
-
+        // Use our customized Twig instance for template rendering, using the default name "view".
         $container->set("view", function() use ($options, $debug)
         {
             $twig = Twig::create($options["twig"]["paths"], $options["twig"]["options"]);
@@ -56,35 +70,44 @@ class DefaultApp
             return $twig;
         });
 
+        // NOTE: Add any additional PHP-DI Container configuration here...
+
+        #endregion
+
+        #region Middleware
+
+        // Add Slim's Built-In Routing Middleware.
+        $app->addRoutingMiddleware();
+
+        // Configure Slim's Twig Middleware.
         TwigMiddleware::createFromContainer($app);
 
-
-
-
+        // Add our QueryStringRouter Middleware and include any desired options.
         $app->add(new QueryStringRouter("/", ["#/public/#" => "/"]));
-
-
-
-
-
 
         /**
          * Add Error Handling Middleware
          *
          * @param bool $displayErrorDetails Should be set to false in production
          * @param bool $logErrors Parameter is passed to the default ErrorHandler
-         * @param bool $logErrorDetails Display error details in error log which can be replaced by a callable of your choice.
+         * @param bool $logErrorDetails Display error details in error log which can be replaced by any callable.
 
-         * Note: This middleware should be added last, as it will not handle any exceptions/errors for anything added after it!
+         * NOTE: This middleware should be added last, as it will not handle any errors for anything added after it!
          */
         $errorMiddleware = $app->addErrorMiddleware($debug, true, true);
-        $errorMiddleware->setErrorHandler(HttpUnauthorizedException::class, new UnauthorizedHandler($app)); // 401
-        $errorMiddleware->setErrorHandler(HttpNotFoundException::class, new NotFoundHandler($app)); // 404
-        $errorMiddleware->setErrorHandler(HttpMethodNotAllowedException::class, new MethodNotAllowedHandler($app)); // 405
+
+        // Add our own HTTP 401 Unauthorized handler.
+        $errorMiddleware->setErrorHandler(HttpUnauthorizedException::class, new UnauthorizedHandler($app));
+
+        // Add our own HTTP 404 Not Found handler.
+        $errorMiddleware->setErrorHandler(HttpNotFoundException::class, new NotFoundHandler($app));
+
+        // Add our own HTTP 405 Method Not Allowed handler.
+        $errorMiddleware->setErrorHandler(HttpMethodNotAllowedException::class, new MethodNotAllowedHandler($app));
+
+        #endregion
 
         return $app;
     }
-
-
 
 }
