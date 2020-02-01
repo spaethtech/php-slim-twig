@@ -116,16 +116,16 @@
         },
         {
             "name": "mvqn/slim",
-            "version": "2.0.3",
+            "version": "2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/mvqn/slim.git",
-                "reference": "bbd9f56d719b4c1764a94be2b78ffddb2334fbda"
+                "reference": "fb305f443be2e3425a9628fb8df5d52a86e4a345"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/mvqn%2Fslim/repository/archive.zip?sha=bbd9f56d719b4c1764a94be2b78ffddb2334fbda",
-                "reference": "bbd9f56d719b4c1764a94be2b78ffddb2334fbda",
+                "url": "https://gitlab.com/api/v4/projects/mvqn%2Fslim/repository/archive.zip?sha=fb305f443be2e3425a9628fb8df5d52a86e4a345",
+                "reference": "fb305f443be2e3425a9628fb8df5d52a86e4a345",
                 "shasum": ""
             },
             "require": {
@@ -152,7 +152,7 @@
                 }
             ],
             "description": "A collection of Slim 4 Middleware.",
-            "time": "2020-01-23T16:05:22+00:00"
+            "time": "2020-02-01T00:47:27+00:00"
         },
         {
             "name": "mvqn/twig",
