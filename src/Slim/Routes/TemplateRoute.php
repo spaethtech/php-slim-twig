@@ -10,9 +10,6 @@ use Psr\Container\ContainerInterface as Container;
 
 use Slim\App;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Interfaces\RouteInterface;
-use Slim\Routing\Route;
-use Slim\Routing\RouteContext;
 use Slim\Views\Twig;
 use Twig\Loader\FilesystemLoader;
 
