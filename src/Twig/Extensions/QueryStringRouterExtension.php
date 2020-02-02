@@ -1,44 +1,44 @@
 <?php
+/** @noinspection PhpUnused */
 declare(strict_types=1);
 
 namespace MVQN\Twig\Extensions;
-
 
 use DateTime;
 use Exception;
 use MVQN\Slim\Middleware\Routing\QueryStringRouter;
 use Twig\Extension\GlobalsInterface;
 use Twig\Extension\AbstractExtension;
+use Twig\TokenParser\TokenParserInterface;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 
-
 /**
- * Class Extension
+ * Class QueryStringRouterExtension
  *
  * @package MVQN\Twig
  * @author Ryan Spaeth <rspaeth@mvqn.net>
  */
 class QueryStringRouterExtension extends AbstractExtension implements GlobalsInterface
 {
-    /** @var array */
+    /**
+     * @var array An array of extension-wide global values.
+     */
     protected static $globals = [
         "app" => [
-            // NOTE: Add any desired defaults here...
-            "test3" => "ABC",
+            // NOTE: Add any desired fixed globals here...
         ]
     ];
 
     /**
      * QueryStringRouterExtension constructor.
      *
-     * @param string $controller
+     * @param string $controller The front-controller script as an URL prefix, defaults to "/index.php".
      * @param array $globals An optional array of global values to be made available to all Twig templates.
-     * @param bool $debug
+     * @param bool $debug Determines whether or not to display additional debug messages, defaults to FALSE.
      */
     public function __construct(string $controller = "/index.php", array $globals = [], bool $debug = false)
     {
-        //self::$globals["app"]["baseUrl"] = "http://localhost";
         self::$globals["app"]["baseScript"] = $controller;
         self::$globals["app"]["debug"] = $debug;
 
@@ -46,9 +46,10 @@ class QueryStringRouterExtension extends AbstractExtension implements GlobalsInt
             self::$globals["app"][$key] = $value;
     }
 
-
     /**
-     * @return string
+     * Gets the name of the extension.
+     *
+     * @return string The name of the extension.
      */
     public function getName(): string
     {
@@ -56,7 +57,9 @@ class QueryStringRouterExtension extends AbstractExtension implements GlobalsInt
     }
 
     /**
-     * @return array
+     * Gets all token parsers, provided by this extension.
+     *
+     * @return TokenParserInterface[] An array of {@see TokenParserInterface TokenParser} objects.
      */
     public function getTokenParsers(): array
     {
@@ -66,7 +69,9 @@ class QueryStringRouterExtension extends AbstractExtension implements GlobalsInt
     #region FILTERS
 
     /**
-     * @return array
+     * Gets all filters, provided by this extension.
+     *
+     * @return TwigFilter[] An array of {@see TwigFilter} objects.
      */
     public function getFilters(): array
     {
@@ -81,6 +86,7 @@ class QueryStringRouterExtension extends AbstractExtension implements GlobalsInt
      *
      * @return string
      * @throws Exception
+     * @noinspection PhpUnusedLocalVariableInspection
      */
     public function uncached(string $path)
     {
@@ -131,6 +137,7 @@ class QueryStringRouterExtension extends AbstractExtension implements GlobalsInt
      * @param string $path
      * @return string
      * @throws Exception
+     * @noinspection PhpUnusedLocalVariableInspection
      */
     public function link(string $path /*, bool $relative = true */): string
     {

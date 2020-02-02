@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnusedParameterInspection */
 declare(strict_types=1);
 require_once __DIR__ . "/bootstrap.php";
 
@@ -46,7 +46,6 @@ $app->group("/auth", function(RouteCollectorProxy $group) use ($app)
                 return true;
             }
         ));
-
 });
 
 #endregion

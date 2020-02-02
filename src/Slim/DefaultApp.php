@@ -26,8 +26,9 @@ use MVQN\Twig\Extensions\QueryStringRouterExtension;
  * @package MVQN\Slim
  * @author Ryan Spaeth <rspaeth@mvqn.net>
  */
-class DefaultApp
+class DefaultApp extends App
 {
+
     /**
      * Default application options.
      */
@@ -59,8 +60,7 @@ class DefaultApp
         $container->set(ResponseFactoryInterface::class, DI\create(ResponseFactory::class));
 
         // Use our customized Twig instance for template rendering, using the default name "view".
-        $container->set("view", function() use ($options, $debug)
-        {
+        $container->set("view", function () use ($options, $debug) {
             $twig = Twig::create($options["twig"]["paths"], $options["twig"]["options"]);
             //$twig->getEnvironment()->addGlobal("home", "/index.php");
 
@@ -91,7 +91,6 @@ class DefaultApp
          * @param bool $displayErrorDetails Should be set to false in production
          * @param bool $logErrors Parameter is passed to the default ErrorHandler
          * @param bool $logErrorDetails Display error details in error log which can be replaced by any callable.
-
          * NOTE: This middleware should be added last, as it will not handle any errors for anything added after it!
          */
         $errorMiddleware = $app->addErrorMiddleware($debug, true, true);
@@ -110,4 +109,12 @@ class DefaultApp
         return $app;
     }
 
+    /*
+    public static function addTemplateRoute(App $app, string $path, string $twigContainerKey = "view")
+    {
+        (new TemplateRoute($app, $path, $twigContainerKey));
+    }
+    */
+
 }
+
