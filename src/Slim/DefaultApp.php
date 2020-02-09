@@ -26,7 +26,7 @@ use Slim\Views\TwigMiddleware;
  * @package MVQN\Slim
  * @author Ryan Spaeth <rspaeth@mvqn.net>
  */
-class DefaultApp extends \MVQN\Slim\App
+class DefaultApp extends App
 {
 
     /**
@@ -64,10 +64,13 @@ class DefaultApp extends \MVQN\Slim\App
      * @param array $paths
      * @param array $options
      * @param bool $debug
+     *
+     * @noinspection PhpUnusedParameterInspection
      */
     public function addTwigRenderingMiddleware(array $paths = [ "./views/" ], array $options = [], bool $debug = false)
     {
         // Use our customized Twig instance for template rendering, using the default name "view".
+
         $this->getContainer()->set("view", function (ContainerInterface $container) use ($paths, $options, $debug)
         {
             $twig = Twig::create($paths, $options);
