@@ -3,22 +3,22 @@ declare(strict_types=1);
 
 namespace MVQN\Slim;
 
-use DI;
-use Psr\Http\Message\ResponseFactoryInterface;
-use Slim\App;
-use Slim\Exception\HttpMethodNotAllowedException;
-use Slim\Exception\HttpNotFoundException;
-use Slim\Exception\HttpUnauthorizedException;
-use Slim\Factory\AppFactory;
-use Slim\Psr7\Factory\ResponseFactory;
-use Slim\Views\Twig;
-use Slim\Views\TwigMiddleware;
-
 use MVQN\Slim\Middleware\Handlers\MethodNotAllowedHandler;
 use MVQN\Slim\Middleware\Handlers\NotFoundHandler;
 use MVQN\Slim\Middleware\Handlers\UnauthorizedHandler;
-use MVQN\Slim\Middleware\Routing\QueryStringRouter;
 use MVQN\Twig\Extensions\QueryStringRouterExtension;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Slim\Exception\HttpMethodNotAllowedException;
+use Slim\Exception\HttpNotFoundException;
+use Slim\Exception\HttpUnauthorizedException;
+use Slim\Interfaces\CallableResolverInterface;
+use Slim\Interfaces\MiddlewareDispatcherInterface;
+use Slim\Interfaces\RouteCollectorInterface;
+use Slim\Interfaces\RouteResolverInterface;
+use Slim\Middleware\ErrorMiddleware;
+use Slim\Views\Twig;
+use Slim\Views\TwigMiddleware;
 
 /**
  * Class DefaultApp
@@ -26,65 +26,75 @@ use MVQN\Twig\Extensions\QueryStringRouterExtension;
  * @package MVQN\Slim
  * @author Ryan Spaeth <rspaeth@mvqn.net>
  */
-class DefaultApp extends App
+class DefaultApp extends \MVQN\Slim\App
 {
 
     /**
-     * Default application options.
+     * DefaultApp constructor.
+     *
+     * @param ResponseFactoryInterface $responseFactory
+     * @param ContainerInterface|null $container
+     * @param CallableResolverInterface|null $callableResolver
+     * @param RouteCollectorInterface|null $routeCollector
+     * @param RouteResolverInterface|null $routeResolver
+     * @param MiddlewareDispatcherInterface|null $middlewareDispatcher
      */
-    protected const DEFAULT_OPTIONS = [
-        "twig" => [
-            "paths" => [],
-            "options" => [],
-        ]
-    ];
+    public function __construct(
+        ResponseFactoryInterface $responseFactory,
+        ?ContainerInterface $container,
+        ?CallableResolverInterface $callableResolver = null,
+        ?RouteCollectorInterface $routeCollector = null,
+        ?RouteResolverInterface $routeResolver = null,
+        ?MiddlewareDispatcherInterface $middlewareDispatcher = null)
+    {
+        parent::__construct(
+            $responseFactory,
+            $container,
+            $callableResolver,
+            $routeCollector,
+            $routeResolver,
+            $middlewareDispatcher
+        );
+
+    }
 
     /**
-     * Create our default Slim Application with PHP-DI Container, Twig Renderer, Error Handling and custom Middleware.
+     * Adds and configures the Twig middleware.
      *
-     * @param array $options Any options to be merged with the default options.
-     * @param bool $debug Determines whether or not debug messages and logging will be enabled, defaults to FALSE.
-     * @return App A Slim Application.
+     * @param array $paths
+     * @param array $options
+     * @param bool $debug
      */
-    public static function create(array $options = [], bool $debug = false): App
+    public function addTwigRenderingMiddleware(array $paths = [ "./views/" ], array $options = [], bool $debug = false)
     {
-        // Merge any user-supplied options with the defaults.
-        $options = array_merge(self::DEFAULT_OPTIONS, $options);
-
-        // Create the application using a PHP-DI Container, as we will be configuring it later.
-        $app = AppFactory::createFromContainer($container = new DI\Container());
-
-        #region Container
-
-        // Use Slim's own PSR-7 ResponseFactory.
-        $container->set(ResponseFactoryInterface::class, DI\create(ResponseFactory::class));
-
         // Use our customized Twig instance for template rendering, using the default name "view".
-        $container->set("view", function () use ($options, $debug) {
-            $twig = Twig::create($options["twig"]["paths"], $options["twig"]["options"]);
+        $this->getContainer()->set("view", function (ContainerInterface $container) use ($paths, $options, $debug)
+        {
+            $twig = Twig::create($paths, $options);
             //$twig->getEnvironment()->addGlobal("home", "/index.php");
 
             $twig->addExtension(new QueryStringRouterExtension($_SERVER["SCRIPT_NAME"], [], $debug));
             //QueryStringRouterExtension::addGlobal("user", "Ryan", "ucrm");
 
+            // Add and configure the Slim/Twig middleware.
+            TwigMiddleware::create($this, $twig); //, "view");
+
             return $twig;
         });
 
-        // NOTE: Add any additional PHP-DI Container configuration here...
+    }
 
-        #endregion
-
-        #region Middleware
-
-        // Add Slim's Built-In Routing Middleware.
-        $app->addRoutingMiddleware();
-
-        // Configure Slim's Twig Middleware.
-        TwigMiddleware::createFromContainer($app);
-
-        // Add our QueryStringRouter Middleware and include any desired options.
-        $app->add(new QueryStringRouter("/", ["#/public/#" => "/"]));
-
+    /**
+     * @param bool $displayErrorDetails
+     * @param bool $logErrors
+     * @param bool $logErrorDetails
+     * @return ErrorMiddleware
+     */
+    public function addDefaultErrorHandlers(
+        bool $displayErrorDetails,
+        bool $logErrors = true,
+        bool $logErrorDetails = true): ErrorMiddleware
+    {
         /**
          * Add Error Handling Middleware
          *
@@ -93,28 +103,19 @@ class DefaultApp extends App
          * @param bool $logErrorDetails Display error details in error log which can be replaced by any callable.
          * NOTE: This middleware should be added last, as it will not handle any errors for anything added after it!
          */
-        $errorMiddleware = $app->addErrorMiddleware($debug, true, true);
+        $errorMiddleware = $this->addErrorMiddleware($displayErrorDetails, $logErrors, $logErrorDetails);
 
         // Add our own HTTP 401 Unauthorized handler.
-        $errorMiddleware->setErrorHandler(HttpUnauthorizedException::class, new UnauthorizedHandler($app));
+        $errorMiddleware->setErrorHandler(HttpUnauthorizedException::class, new UnauthorizedHandler($this));
 
         // Add our own HTTP 404 Not Found handler.
-        $errorMiddleware->setErrorHandler(HttpNotFoundException::class, new NotFoundHandler($app));
+        $errorMiddleware->setErrorHandler(HttpNotFoundException::class, new NotFoundHandler($this));
 
         // Add our own HTTP 405 Method Not Allowed handler.
-        $errorMiddleware->setErrorHandler(HttpMethodNotAllowedException::class, new MethodNotAllowedHandler($app));
+        $errorMiddleware->setErrorHandler(HttpMethodNotAllowedException::class, new MethodNotAllowedHandler($this));
 
-        #endregion
-
-        return $app;
+        return $errorMiddleware;
     }
-
-    /*
-    public static function addTemplateRoute(App $app, string $path, string $twigContainerKey = "view")
-    {
-        (new TemplateRoute($app, $path, $twigContainerKey));
-    }
-    */
 
 }
 

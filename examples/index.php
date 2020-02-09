@@ -30,6 +30,7 @@ $app->group("/auth", function(RouteCollectorProxy $group) use ($app)
                 return $response;
             })
         ->add(new AuthenticationHandler($app))
+        //->add(AuthenticationHandler::class) // Using DI Container!
         ->add(new FixedAuthenticator(true));
 
     $group
