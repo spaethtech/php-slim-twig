@@ -1,7 +1,6 @@
 {
-    "name": "mvqn/slim-twig",
+    "name": "rspaeth/slim-twig",
     "description": "A collection of Slim 4 Middleware & Twig 3 Extensions.",
-    "minimum-stability": "stable",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -18,8 +17,8 @@
         "php-di/php-di": "^6.0",
         "twig/twig": "^3.0",
         "slim/twig-view": "^3.0",
-        "mvqn/slim": "^2.0",
-        "mvqn/twig": "^2.0",
+        "rspaeth/slim": "*",
+        "rspaeth/twig": "*",
         "doctrine/annotations": "^1.8",
         "php-di/slim-bridge": "^3.0"
     },
@@ -27,11 +26,16 @@
     },
     "autoload": {
         "psr-4": {
-            "MVQN\\": "src/"
+            "rspaeth\\": "./src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": [
+        { "type": "path", "url": "../*"}
+    ]
 }

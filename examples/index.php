@@ -5,9 +5,9 @@ require_once __DIR__ . "/bootstrap.php";
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-use MVQN\Slim\Middleware\Authentication\AuthenticationHandler;
-use MVQN\Slim\Middleware\Authentication\Authenticators\CallbackAuthenticator;
-use MVQN\Slim\Middleware\Authentication\Authenticators\FixedAuthenticator;
+use rspaeth\Slim\Middleware\Authentication\AuthenticationHandler;
+use rspaeth\Slim\Middleware\Authentication\Authenticators\CallbackAuthenticator;
+use rspaeth\Slim\Middleware\Authentication\Authenticators\FixedAuthenticator;
 use Slim\Routing\RouteCollectorProxy;
 
 #region Authenticator (Examples)

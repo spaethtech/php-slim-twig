@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace MVQN\Slim;
+namespace rspaeth\Slim;
 
-use MVQN\Slim\Middleware\Handlers\MethodNotAllowedHandler;
-use MVQN\Slim\Middleware\Handlers\NotFoundHandler;
-use MVQN\Slim\Middleware\Handlers\UnauthorizedHandler;
-use MVQN\Twig\Extensions\QueryStringRouterExtension;
+use rspaeth\Slim\Middleware\Handlers\MethodNotAllowedHandler;
+use rspaeth\Slim\Middleware\Handlers\NotFoundHandler;
+use rspaeth\Slim\Middleware\Handlers\UnauthorizedHandler;
+use rspaeth\Twig\Extensions\QueryStringRouterExtension;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Exception\HttpMethodNotAllowedException;
@@ -23,7 +23,7 @@ use Slim\Views\TwigMiddleware;
 /**
  * Class DefaultApp
  *
- * @package MVQN\Slim
+ * @package rspaeth\Slim
  * @author Ryan Spaeth <rspaeth@mvqn.net>
  */
 class DefaultApp extends App
