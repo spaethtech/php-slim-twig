@@ -2,11 +2,11 @@
 /** @noinspection PhpUnused */
 declare(strict_types=1);
 
-namespace rspaeth\Twig\Extensions;
+namespace MVQN\Twig\Extensions;
 
 use DateTime;
 use Exception;
-use rspaeth\Slim\Middleware\Routing\QueryStringRouter;
+use MVQN\Slim\Middleware\Routing\QueryStringRouter;
 use Twig\Extension\GlobalsInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TokenParser\TokenParserInterface;
@@ -16,7 +16,7 @@ use Twig\TwigFunction;
 /**
  * Class QueryStringRouterExtension
  *
- * @package rspaeth\Twig
+ * @package MVQN\Twig
  * @author Ryan Spaeth <rspaeth@mvqn.net>
  */
 class QueryStringRouterExtension extends AbstractExtension implements GlobalsInterface

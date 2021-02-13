@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace rspaeth\Slim\Controllers;
+namespace MVQN\Slim\Controllers;
 
-use rspaeth\Slim\App;
+use MVQN\Slim\App;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Container\ContainerInterface as Container;

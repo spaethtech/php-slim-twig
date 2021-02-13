@@ -2,12 +2,12 @@
 declare(strict_types=1);
 require_once __DIR__ . "/../vendor/autoload.php";
 
-use rspaeth\Slim\Controllers\TemplateController;
-use rspaeth\Slim\DefaultApp;
-use rspaeth\Slim\Controllers\AssetController;
-use rspaeth\Slim\Controllers\ScriptController;
-use rspaeth\Slim\Middleware\Authentication\AuthenticationHandler;
-use rspaeth\Slim\Middleware\Authentication\Authenticators\FixedAuthenticator;
+use MVQN\Slim\Controllers\TemplateController;
+use MVQN\Slim\DefaultApp;
+use MVQN\Slim\Controllers\AssetController;
+use MVQN\Slim\Controllers\ScriptController;
+use MVQN\Slim\Middleware\Authentication\AuthenticationHandler;
+use MVQN\Slim\Middleware\Authentication\Authenticators\FixedAuthenticator;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\App;
 use Slim\Psr7\Factory\ResponseFactory;
