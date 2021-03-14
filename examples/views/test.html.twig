@@ -12,10 +12,13 @@
     </p>
 
     {{ home }}
+    {{ dump(app.test) }}
 
-    {{ app.test3 }}
+    <p>{{ app.controller }}</p>
+    <p>{{ app.debug ? "DEVELOPMENT" : "PRODUCTION" }}</p>
 
-    <p>{{ link("/home") }}</p>
+    <p>{{ app.url ~ link("/home") }}</p>
+    <p><strong>route: {{ route("test", { name: "ryan" }, { test: 123 }) }}</strong></p>
 
     <p>{{ attributes.vRoute }}</p>
     <p>{{ dump(attributes.vQuery) }}</p>
@@ -23,6 +26,9 @@
     <p>{{ ucrm.user }}</p>
 
     <p>{{ dump(attributes.vQuery) }}</p>
+
+    {#<pre>{{ dump(attributes) }}</pre>#}
+    <p>{{ dump(uri) }}</p>
 
 
 </body>

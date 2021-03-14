@@ -1,9 +1,9 @@
-<?php
+<?php /** @noinspection PhpUnused */
 declare(strict_types=1);
 
 namespace MVQN\Slim\Controllers;
 
-use MVQN\Slim\App;
+use MVQN\Slim\Application;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Container\ContainerInterface as Container;
@@ -18,9 +18,11 @@ use Twig\Loader\FilesystemLoader;
  *
  * Handles routing and subsequent rendering of Twig templates.
  *
- * @package UCRM\Slim\Controllers\Common
- * @author Ryan Spaeth <rspaeth@mvqn.net>
+ * @package UCRM\Slim\Controllers
  * @final
+ *
+ * @author Ryan Spaeth
+ * @copyright 2020 Spaeth Technologies, Inc.
  */
 final class TemplateController extends Controller
 {
@@ -37,11 +39,11 @@ final class TemplateController extends Controller
     /**
      * TemplateController constructor.
      *
-     * @param App $app The Slim Application for which to configure routing.
+     * @param Application $app The Slim Application for which to configure routing.
      * @param string $path The absolute path to the templates directory.
      * @param string $twigContainerKey An optional container key, if the default key "view" is not used.
      */
-    public function __construct(App $app, string $path, string $twigContainerKey = "view")
+    public function __construct(Application $app, string $path, string $twigContainerKey = "view")
     {
         parent::__construct($app);
         $this->path = $path;
@@ -51,7 +53,7 @@ final class TemplateController extends Controller
     /**
      * @inheritDoc
      */
-    public function __invoke(App $app): RouteGroupInterface
+    public function __invoke(Application $app): RouteGroupInterface
     {
         // Mapped, in cases where a DI Container replaces the $this context in Closures.
         $self = $this;
@@ -84,6 +86,7 @@ final class TemplateController extends Controller
                     // Assemble some standard data to send along to the Twig template!
                     $data = [
                         "attributes" => $request->getAttributes(),
+                        "uri" => $request->getUri(),
                     ];
 
                     // IF the template file exists AND is not a directory...

@@ -18,15 +18,16 @@ use Slim\Interfaces\RouteCollectorInterface;
 use Slim\Interfaces\RouteResolverInterface;
 use Slim\Middleware\ErrorMiddleware;
 use Slim\Views\Twig;
-use Slim\Views\TwigMiddleware;
 
 /**
  * Class DefaultApp
  *
  * @package MVQN\Slim
- * @author Ryan Spaeth <rspaeth@mvqn.net>
+ *
+ * @author Ryan Spaeth
+ * @copyright 2020 Spaeth Technologies, Inc.
  */
-class DefaultApp extends App
+class TwigApplication extends Application
 {
 
     /**
@@ -66,23 +67,27 @@ class DefaultApp extends App
      * @param bool $debug
      *
      * @noinspection PhpUnusedParameterInspection
+     * @noinspection PhpUnusedLocalVariableInspection
      */
-    public function addTwigRenderingMiddleware(array $paths = [ "./views/" ], array $options = [], bool $debug = false)
+    public function useTwigTemplateEngine(array $paths = [ "./views/" ], array $options = [], bool $debug = false)
     {
         // Use our customized Twig instance for template rendering, using the default name "view".
+        $self = $this;
 
-        $this->getContainer()->set("view", function (ContainerInterface $container) use ($paths, $options, $debug)
+        $this->getContainer()->set("view", function (ContainerInterface $container) use ($self, $paths, $options, $debug)
         {
             $twig = Twig::create($paths, $options);
             //$twig->getEnvironment()->addGlobal("home", "/index.php");
 
-            $twig->addExtension(new QueryStringRouterExtension($_SERVER["SCRIPT_NAME"], [], $debug));
+            $twig->addExtension(new QueryStringRouterExtension($this, $_SERVER["SCRIPT_NAME"], [], $debug));
+
             //QueryStringRouterExtension::addGlobal("user", "Ryan", "ucrm");
 
             // Add and configure the Slim/Twig middleware.
-            TwigMiddleware::create($this, $twig); //, "view");
+            //$self->addMiddleware(TwigMiddleware::create($self, $twig)); //, "view"));
 
             return $twig;
+
         });
 
     }
@@ -91,11 +96,10 @@ class DefaultApp extends App
      * @param bool $displayErrorDetails
      * @param bool $logErrors
      * @param bool $logErrorDetails
+     *
      * @return ErrorMiddleware
      */
-    public function addDefaultErrorHandlers(
-        bool $displayErrorDetails,
-        bool $logErrors = true,
+    public function addDefaultErrorHandlers(bool $displayErrorDetails, bool $logErrors = true,
         bool $logErrorDetails = true): ErrorMiddleware
     {
         /**
@@ -104,7 +108,7 @@ class DefaultApp extends App
          * @param bool $displayErrorDetails Should be set to false in production
          * @param bool $logErrors Parameter is passed to the default ErrorHandler
          * @param bool $logErrorDetails Display error details in error log which can be replaced by any callable.
-         * NOTE: This middleware should be added last, as it will not handle any errors for anything added after it!
+         * NOTE: This middleware should be added last, as it will not handle any errors for any middleware after it!
          */
         $errorMiddleware = $this->addErrorMiddleware($displayErrorDetails, $logErrors, $logErrorDetails);
 
@@ -118,6 +122,7 @@ class DefaultApp extends App
         $errorMiddleware->setErrorHandler(HttpMethodNotAllowedException::class, new MethodNotAllowedHandler($this));
 
         return $errorMiddleware;
+
     }
 
 }

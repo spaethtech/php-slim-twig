@@ -1,5 +1,5 @@
 .idea/
-vendor/
 .env
 
+vendor/
 examples/views/.cache/

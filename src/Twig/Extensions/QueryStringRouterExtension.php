@@ -1,5 +1,4 @@
-<?php
-/** @noinspection PhpUnused */
+<?php /** @noinspection PhpUnused */
 declare(strict_types=1);
 
 namespace MVQN\Twig\Extensions;
@@ -7,6 +6,7 @@ namespace MVQN\Twig\Extensions;
 use DateTime;
 use Exception;
 use MVQN\Slim\Middleware\Routing\QueryStringRouter;
+use MVQN\Slim\TwigApplication;
 use Twig\Extension\GlobalsInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TokenParser\TokenParserInterface;
@@ -17,10 +17,17 @@ use Twig\TwigFunction;
  * Class QueryStringRouterExtension
  *
  * @package MVQN\Twig
- * @author Ryan Spaeth <rspaeth@mvqn.net>
+ *
+ * @author Ryan Spaeth
+ * @copyright 2020 Spaeth Technologies, Inc.
  */
 class QueryStringRouterExtension extends AbstractExtension implements GlobalsInterface
 {
+    /**
+     * @var TwigApplication The {@see Application} on which this Twig Extension operates.
+     */
+    protected $app;
+
     /**
      * @var array An array of extension-wide global values.
      */
@@ -33,17 +40,26 @@ class QueryStringRouterExtension extends AbstractExtension implements GlobalsInt
     /**
      * QueryStringRouterExtension constructor.
      *
+     * @param TwigApplication $app The {@see Application} on which this Twig Extension operates.
      * @param string $controller The front-controller script as an URL prefix, defaults to "/index.php".
      * @param array $globals An optional array of global values to be made available to all Twig templates.
      * @param bool $debug Determines whether or not to display additional debug messages, defaults to FALSE.
      */
-    public function __construct(string $controller = "/index.php", array $globals = [], bool $debug = false)
+    public function __construct(TwigApplication $app, string $controller = "/index.php", array $globals = [],
+        bool $debug = false)
     {
-        self::$globals["app"]["baseScript"] = $controller;
+        $this->app = $app;
+
+        self::$globals["base_path"] =
+        self::$globals["app"]["url"] =
+            (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on" ? "https" : "http") . "://" . $_SERVER["HTTP_HOST"];
+
+        self::$globals["app"]["controller"] = $controller;
         self::$globals["app"]["debug"] = $debug;
 
         foreach($globals as $key => $value)
             self::$globals["app"][$key] = $value;
+
     }
 
     /**
@@ -54,6 +70,7 @@ class QueryStringRouterExtension extends AbstractExtension implements GlobalsInt
     public function getName(): string
     {
         return "QueryStringRouterExtension";
+
     }
 
     /**
@@ -64,6 +81,7 @@ class QueryStringRouterExtension extends AbstractExtension implements GlobalsInt
     public function getTokenParsers(): array
     {
         return [];
+
     }
 
     #region FILTERS
@@ -75,10 +93,10 @@ class QueryStringRouterExtension extends AbstractExtension implements GlobalsInt
      */
     public function getFilters(): array
     {
-
         return [
             new TwigFilter("uncached", [$this, "uncached"]),
         ];
+
     }
 
     /**
@@ -88,9 +106,8 @@ class QueryStringRouterExtension extends AbstractExtension implements GlobalsInt
      * @throws Exception
      * @noinspection PhpUnusedLocalVariableInspection
      */
-    public function uncached(string $path)
+    public function uncached(string $path): string
     {
-
         $uncachedPath = "";
 
         //if(Strings::contains($path, "?"))
@@ -116,6 +133,7 @@ class QueryStringRouterExtension extends AbstractExtension implements GlobalsInt
         }
 
         return $uncachedPath;
+
     }
 
     #endregion
@@ -128,18 +146,21 @@ class QueryStringRouterExtension extends AbstractExtension implements GlobalsInt
     public function getFunctions(): array
     {
         return [
-            new TwigFunction("link", [$this, "link"]),
             new TwigFunction("dump", function($data) { if(self::$globals["app"]["debug"]) var_dump($data); }),
+
+            new TwigFunction("link", [$this, "link"]),
+            new TwigFunction("route", [$this, "route"]),
         ];
+
     }
 
     /**
      * @param string $path
+     *
      * @return string
      * @throws Exception
-     * @noinspection PhpUnusedLocalVariableInspection
      */
-    public function link(string $path /*, bool $relative = true */): string
+    public function link(string $path): string
     {
         // Temporarily remove any URL fragment...
         $fragment = "";
@@ -152,31 +173,51 @@ class QueryStringRouterExtension extends AbstractExtension implements GlobalsInt
         // Split the provided path into path and query string (if provided).
         list($path, $query) = $path !== "" ? explode("?", strpos("?", $path) !== false ? $path : "$path?") : ["", ""];
 
-        $baseUrl = self::$globals["app"]["baseUrl"] ?? "";
-        $baseScript = self::$globals["app"]["baseScript"] ?? "";
+        //$url = self::$globals["app"]["url"] ?? "";
+        $controller = self::$globals["app"]["controller"] ?? "";
 
-        $path = ($path === "/" && $baseScript !== "") || $path === "" ? "" : ($baseScript !== "" ? "?" : "")."$path";
+        $path = ($path === "/" && $controller !== "") || $path === "" ? "" : ($controller !== "" ? "?" : "")."$path";
 
-        $link = /* $relative ? */ $baseScript.$path /* : $baseUrl.$baseScript.$path */;
-        $link .= $query !== "" ? ($baseScript !== "" && $path !== "" ? "&" : "?")."$query" : "";
+        $link = /* $relative ? */ $controller.$path /* : $url.$controller.$path */;
+        $link .= $query !== "" ? ($controller !== "" && $path !== "" ? "&" : "?")."$query" : "";
 
         return $link.$fragment ?: $path;
+
+    }
+
+    /**
+     * Gets the url for a named route.
+     *
+     * @param string $name The name of the route to find.
+     * @param array $data Optional Route placeholders.
+     * @param array $params Optional Query parameters.
+     *
+     * @return string
+     */
+    public function route(string $name, array $data = [], array $params = []): string
+    {
+        return $this->app->getRouteCollector()->getRouteParser()->urlFor($name, $data, $params);
+
     }
 
     #endregion
 
-
-
+    /**
+     * @return array
+     */
     public function getGlobals(): array
     {
         return self::$globals;
+
     }
 
     public static function addGlobal(string $name, $value, string $namespace = "app")
     {
+        if(!$namespace || $namespace === "")
+            self::$globals[$name] = $value;
+        else
+            self::$globals[$namespace][$name] = $value;
 
-
-        self::$globals[$namespace][$name] = $value;
     }
 
 }
