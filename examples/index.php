@@ -2,20 +2,20 @@
 declare(strict_types=1);
 require_once __DIR__ . "/../vendor/autoload.php";
 
-use MVQN\Slim\Controllers\TemplateController;
-use MVQN\Slim\TwigApplication;
-use MVQN\Slim\Controllers\AssetController;
-use MVQN\Slim\Controllers\ScriptController;
-use MVQN\Slim\Middleware\Authentication\AuthenticationHandler;
-use MVQN\Slim\Middleware\Authentication\Authenticators\FixedAuthenticator;
-use MVQN\Twig\Extensions\QueryStringRouterExtension;
+use SpaethTech\Slim\Controllers\TemplateController;
+use SpaethTech\Slim\TwigApplication;
+use SpaethTech\Slim\Controllers\AssetController;
+use SpaethTech\Slim\Controllers\ScriptController;
+use SpaethTech\Slim\Middleware\Authentication\AuthenticationHandler;
+use SpaethTech\Slim\Middleware\Authentication\Authenticators\FixedAuthenticator;
+use SpaethTech\Twig\Extensions\QueryStringRouterExtension;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\App;
 use Slim\Psr7\Factory\ResponseFactory;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-use MVQN\Slim\Middleware\Authentication\Authenticators\CallbackAuthenticator;
+use SpaethTech\Slim\Middleware\Authentication\Authenticators\CallbackAuthenticator;
 use Slim\Routing\RouteCollectorProxy;
 
 /**

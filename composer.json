@@ -1,12 +1,12 @@
 {
-    "name": "mvqn/slim-twig",
+    "name": "spaethtech/slim-twig",
     "description": "A collection of Slim 4 Middleware & Twig 3 Extensions.",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
             "name": "Ryan Spaeth",
-            "email": "rspaeth@mvqn.net"
+            "email": "rspaeth@spaethtech.com"
         }
     ],
     "minimum-stability": "stable",
@@ -17,8 +17,8 @@
         "slim/psr7": "~1",
         "twig/twig": "~3",
         "slim/twig-view": "~3",
-        "mvqn/slim": "~3",
-        "mvqn/twig": "~3"
+        "spaethtech/slim": "~3",
+        "spaethtech/twig": "~3"
 
     },
     "require-dev": {
@@ -27,7 +27,7 @@
     },
     "autoload": {
         "psr-4": {
-            "MVQN\\": "./src/"
+            "SpaethTech\\": "./src/"
         }
     }
 

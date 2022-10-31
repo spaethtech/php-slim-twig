@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace MVQN\Slim;
+namespace SpaethTech\Slim;
 
-use MVQN\Slim\Middleware\Handlers\MethodNotAllowedHandler;
-use MVQN\Slim\Middleware\Handlers\NotFoundHandler;
-use MVQN\Slim\Middleware\Handlers\UnauthorizedHandler;
-use MVQN\Twig\Extensions\QueryStringRouterExtension;
+use SpaethTech\Slim\Middleware\Handlers\MethodNotAllowedHandler;
+use SpaethTech\Slim\Middleware\Handlers\NotFoundHandler;
+use SpaethTech\Slim\Middleware\Handlers\UnauthorizedHandler;
+use SpaethTech\Twig\Extensions\QueryStringRouterExtension;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Exception\HttpMethodNotAllowedException;
@@ -22,7 +22,7 @@ use Slim\Views\Twig;
 /**
  * Class DefaultApp
  *
- * @package MVQN\Slim
+ * @package SpaethTech\Slim
  *
  * @author Ryan Spaeth
  * @copyright 2020 Spaeth Technologies, Inc.
@@ -126,4 +126,3 @@ class TwigApplication extends Application
     }
 
 }
-

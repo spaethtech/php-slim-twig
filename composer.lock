@@ -63,11 +63,11 @@
             "time": "2020-11-24T22:02:12+00:00"
         },
         {
-            "name": "mvqn/slim",
+            "name": "spaethtech/slim",
             "version": "3.0.0",
             "source": {
                 "type": "git",
-                "url": "https://gitlab.com/mvqn/slim.git",
+                "url": "https://gitlab.com/spaethtech/slim.git",
                 "reference": "00c59e1fcc38cf5f2fa474ccd5d6b7bd0f206331"
             },
             "dist": {
@@ -85,7 +85,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "MVQN\\": "./src/"
+                    "SpaethTech\\": "./src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -95,7 +95,7 @@
             "authors": [
                 {
                     "name": "Ryan Spaeth",
-                    "email": "rspaeth@mvqn.net"
+                    "email": "rspaeth@spaethtech.com"
                 }
             ],
             "description": "A collection of Slim 4 Middleware.",
@@ -105,11 +105,11 @@
             "time": "2021-02-17T05:30:45+00:00"
         },
         {
-            "name": "mvqn/twig",
+            "name": "spaethtech/twig",
             "version": "3.0.0",
             "source": {
                 "type": "git",
-                "url": "https://gitlab.com/mvqn/twig.git",
+                "url": "https://gitlab.com/spaethtech/twig.git",
                 "reference": "f45a811f28f7ad00e3a5b1721e79fd983e3fdf52"
             },
             "dist": {
@@ -125,7 +125,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "MVQN\\": "./src/"
+                    "SpaethTech\\": "./src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -135,7 +135,7 @@
             "authors": [
                 {
                     "name": "Ryan Spaeth",
-                    "email": "rspaeth@mvqn.net"
+                    "email": "rspaeth@spaethtech.com"
                 }
             ],
             "description": "A library for additional Twig functionality.",

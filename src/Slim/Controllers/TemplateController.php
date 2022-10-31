@@ -1,9 +1,9 @@
 <?php /** @noinspection PhpUnused */
 declare(strict_types=1);
 
-namespace MVQN\Slim\Controllers;
+namespace SpaethTech\Slim\Controllers;
 
-use MVQN\Slim\Application;
+use SpaethTech\Slim\Application;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Container\ContainerInterface as Container;

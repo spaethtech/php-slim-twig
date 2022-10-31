@@ -1,12 +1,12 @@
 <?php /** @noinspection PhpUnused */
 declare(strict_types=1);
 
-namespace MVQN\Twig\Extensions;
+namespace SpaethTech\Twig\Extensions;
 
 use DateTime;
 use Exception;
-use MVQN\Slim\Middleware\Routing\QueryStringRouter;
-use MVQN\Slim\TwigApplication;
+use SpaethTech\Slim\Middleware\Routing\QueryStringRouter;
+use SpaethTech\Slim\TwigApplication;
 use Twig\Extension\GlobalsInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TokenParser\TokenParserInterface;
@@ -16,7 +16,7 @@ use Twig\TwigFunction;
 /**
  * Class QueryStringRouterExtension
  *
- * @package MVQN\Twig
+ * @package SpaethTech\Twig
  *
  * @author Ryan Spaeth
  * @copyright 2020 Spaeth Technologies, Inc.
