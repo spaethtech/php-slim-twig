@@ -17,13 +17,12 @@
         "slim/psr7": "~1",
         "twig/twig": "~3",
         "slim/twig-view": "~3",
-        "spaethtech/slim": "~3",
-        "spaethtech/twig": "~3"
+        "spaethtech/slim": "*",
+        "spaethtech/twig": "*"
 
     },
     "require-dev": {
         "php-di/php-di": "^6.0"
-
     },
     "autoload": {
         "psr-4": {

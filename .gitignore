@@ -3,3 +3,4 @@
 
 vendor/
 examples/views/.cache/
+composer.lock
