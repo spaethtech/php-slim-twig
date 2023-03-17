@@ -1,5 +1,5 @@
 {
-    "name": "spaethtech/slim-twig",
+    "name": "spaethtech/php-slimtwig",
     "description": "A collection of Slim 4 Middleware & Twig 3 Extensions.",
     "type": "library",
     "license": "MIT",
